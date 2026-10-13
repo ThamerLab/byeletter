@@ -9,6 +9,7 @@ services:
     environment:
       # Required: password for the app's own login page.
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env or your shell}
+      MICROSOFT_CLIENT_ID: ${MICROSOFT_CLIENT_ID:-}
       # Recommended: 32+ random characters (openssl rand -hex 32). Also encrypts saved
       # mailbox passwords, so keep it stable or you'll need to re-add your mailboxes.
       SESSION_SECRET: ${SESSION_SECRET:-}
