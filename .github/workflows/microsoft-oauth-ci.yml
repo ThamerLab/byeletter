@@ -1,0 +1,26 @@
+name: Microsoft OAuth PR checks
+on:
+  push:
+    branches: [feat/microsoft-personal-oauth]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Microsoft OAuth unit tests
+        run: node --experimental-strip-types --test tests/microsoft-oauth.test.mjs
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+      - name: Lint
+        run: npm run lint
+      - name: Production build
+        run: npm run build
