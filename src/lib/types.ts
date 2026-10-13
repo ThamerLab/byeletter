@@ -14,6 +14,8 @@ export interface MailAccount {
   email: string;
   username: string;
   password: string;
+  /** Microsoft refresh token, encrypted with the existing account record. */
+  oauth?: { provider: "microsoft"; refreshToken: string };
   incoming: ServerConfig;
   smtp?: ServerConfig;
   /** Accept self-signed certificates (e.g. Proton Mail Bridge on localhost). */
