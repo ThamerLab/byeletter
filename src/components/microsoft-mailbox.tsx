@@ -83,8 +83,8 @@ export default function MicrosoftMailbox() {
     <section className="rounded-xl border border-blue-200 bg-blue-50/60 p-5 dark:border-blue-900 dark:bg-blue-950/30">
       <h2 className="mb-2 font-semibold">Outlook.com / Hotmail — Sign in with Microsoft</h2>
       <p className="mb-4 text-sm text-neutral-600 dark:text-neutral-300">
-        Use Microsoft's secure device sign-in. No mailbox password is shared with Byeletter.
-        Open Microsoft's website and enter the code shown here.
+        Use Microsoft&apos;s secure device sign-in. No mailbox password is shared with Byeletter.
+        Open Microsoft&apos;s website and enter the code shown here.
       </p>
       {!flow ? (
         <form onSubmit={start} className="space-y-3">
