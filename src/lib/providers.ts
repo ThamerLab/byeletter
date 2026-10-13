@@ -32,7 +32,7 @@ export const PROVIDERS: Provider[] = [
     imap: { host: "outlook.office365.com", port: 993, secure: true },
     pop3: { host: "outlook.office365.com", port: 995, secure: true },
     smtp: { host: "smtp.office365.com", port: 587, secure: false },
-    note: "Microsoft is phasing out password (basic) auth; it only works where your account or tenant still allows it.",
+    note: "For personal Outlook.com/Hotmail accounts, use the Microsoft OAuth sign-in above. Password authentication is no longer supported.",
     helpUrl: "https://support.microsoft.com/office/pop-imap-and-smtp-settings-for-outlook-com-d088b986-291d-42b8-9564-9c414e2aa040",
   },
   {
