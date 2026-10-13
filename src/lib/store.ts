@@ -85,6 +85,16 @@ export function createAccount(account: MailAccount, label?: string): string {
   return id;
 }
 
+/** Persist Microsoft refresh-token rotation without changing other mailbox settings. */
+export function saveMicrosoftRefreshToken(email: string, protocol: string, previous: string, updated: string): void {
+  const row = db().prepare("SELECT id, secret FROM accounts WHERE lower(email) = lower(?) AND protocol = ?").get(email, protocol) as Row | undefined;
+  if (!row) return;
+  const account = decryptJson<MailAccount>(String(row.secret));
+  if (account.oauth?.provider !== "microsoft" || account.oauth.refreshToken !== previous) return;
+  account.oauth.refreshToken = updated;
+  db().prepare("UPDATE accounts SET secret = ? WHERE id = ?").run(encryptJson(account), String(row.id));
+}
+
 export function renameAccount(id: string, label: string) {
   db().prepare("UPDATE accounts SET label = ? WHERE id = ?").run(label.trim(), id);
 }
