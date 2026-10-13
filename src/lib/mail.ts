@@ -1,4 +1,5 @@
 import "server-only";
+import { microsoftAccessToken } from "./microsoft-access";
 import { ImapFlow, type ListResponse } from "imapflow";
 import Pop3Command from "node-pop3";
 import { groupNewsletters, parseHeaderBlock, WANTED_HEADERS, type ParsedMessage } from "./newsletters";
@@ -7,12 +8,12 @@ import type { MailAccount, Newsletter, ScanScope } from "./types";
 const TIMEOUT_MS = 30_000;
 export const MAX_PER_FOLDER = 5000;
 
-function imapClient(account: MailAccount) {
+function imapClient(account: MailAccount, accessToken?: string) {
   return new ImapFlow({
     host: account.incoming.host,
     port: account.incoming.port,
     secure: account.incoming.secure,
-    auth: { user: account.username, pass: account.password },
+    auth: accessToken ? { user: account.username, accessToken } : { user: account.username, pass: account.password },
     logger: false,
     connectionTimeout: TIMEOUT_MS,
     greetingTimeout: TIMEOUT_MS,
@@ -33,8 +34,9 @@ function pop3Client(account: MailAccount) {
   });
 }
 
-async function withImap<T>(account: MailAccount, fn: (client: ImapFlow) => Promise<T>): Promise<T> {
-  const client = imapClient(account);
+async function withImap<T>(account: MailAccount, fn: (client: ImapFlow) => Promise<T>, tokenOverride?: string): Promise<T> {
+  const token = tokenOverride ?? (account.oauth ? await microsoftAccessToken(account) : undefined);
+  const client = imapClient(account, token);
   // Swallow late socket errors so they don't crash the process.
   client.on("error", () => {});
   await client.connect();
@@ -55,10 +57,10 @@ async function withPop3<T>(account: MailAccount, fn: (client: Pop3Command) => Pr
 }
 
 /** Log in once to make sure the credentials work. Throws a readable error otherwise. */
-export async function verifyAccount(account: MailAccount): Promise<void> {
+export async function verifyAccount(account: MailAccount, tokenOverride?: string): Promise<void> {
   try {
     if (account.protocol === "imap") {
-      await withImap(account, async () => {});
+      await withImap(account, async () => {}, tokenOverride);
     } else {
       await withPop3(account, (c) => c.STAT());
     }
