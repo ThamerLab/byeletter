@@ -18,6 +18,8 @@ jobs:
         run: npm ci
       - name: Microsoft OAuth unit tests
         run: node --experimental-strip-types --test tests/microsoft-oauth.test.mjs
+      - name: Generate Next.js route types
+        run: npx next typegen
       - name: TypeScript type check
         run: npx tsc --noEmit
       - name: Lint
