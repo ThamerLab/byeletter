@@ -1,4 +1,5 @@
 import "server-only";
+import { microsoftAccessToken } from "./microsoft-access";
 import nodemailer from "nodemailer";
 import { safePost } from "./safe-fetch";
 import type { MailAccount, UnsubscribeMethods, UnsubscribeOutcome } from "./types";
@@ -38,11 +39,12 @@ async function sendMailto(account: MailAccount, mailto: string): Promise<Unsubsc
   const target = parseMailto(mailto);
   if (!target) throw new Error("Invalid mailto address");
 
+  const oauthToken = account.oauth ? await microsoftAccessToken(account) : undefined;
   const transport = nodemailer.createTransport({
     host: account.smtp.host,
     port: account.smtp.port,
     secure: account.smtp.secure,
-    auth: { user: account.username, pass: account.password },
+    auth: oauthToken ? { type: "OAuth2" as const, user: account.username, accessToken: oauthToken } : { user: account.username, pass: account.password },
     connectionTimeout: 20_000,
     tls: account.allowSelfSigned ? { rejectUnauthorized: false } : undefined,
   });
